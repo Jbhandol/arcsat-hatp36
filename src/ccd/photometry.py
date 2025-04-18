@@ -1,0 +1,51 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# @Filename: photometry.py
+# @License: BSD 3-clause (http://www.opensource.org/licenses/BSD-3-Clause)
+
+
+def do_aperture_photometry(
+    image,
+    positions,
+    radii,
+    sky_radius_in,
+    sky_annulus_width,
+):
+    """This function must:
+
+    - Accept a fully reduced science image as a file and read it.
+    - Accept a list of positions on the image as a list of tuples (x, y).
+    - Accept a list of aperture radii as a list of floats.
+    - Accept a the radius at which to measure the sky background as sky_radius_in.
+    - Accept a the width of the annulus as sky_annulus_width.
+    - For each position and radius, calculate the flux in the aperture, subtracting
+      the sky background. You can do this any way that you like but probably you'll
+      want to use SkyCircularAnnulus from photutils.
+    - The function should return a table, the result of calling aperture_photometry
+      from photutils. If you prefer to do the calculations yourself or using another
+      package, you can have the function return False, in which case the tests
+      will skip this function.
+
+    """
+
+    # This is a placeholder for the actual implementation.
+
+    return
+
+
+def plot_radial_profile(aperture_photometry_data):
+    """This function must:
+
+    - Accept a table of aperture photometry data as aperture_photometry_data. This
+      is probably a photutils table, the result of do_aperture_photometry, but you
+      can pass anything you like. The table/input data can contain a single target
+      or multiple targets, but it must include multiple apertures.
+    - Plot the radial profile of a target in the image using matplotlib. If you
+      have multiple targets, label them correctly.
+    - Plot a vertical line at the radius of the sky aperture used for the photometry.
+    - Save the plot to a file called radial_profile.png.
+
+    """
+
+    pass
