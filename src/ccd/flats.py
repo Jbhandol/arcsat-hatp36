@@ -41,7 +41,11 @@ def create_median_flat(
     return median_flat
 
 
-def plot_flat(median_flat_filename, ouput_filename="median_flat_profile.png"):
+def plot_flat(
+    median_flat_filename,
+    ouput_filename="median_flat.png",
+    profile_ouput_filename="median_flat_profile.png",
+):
     """This function must:
 
     - Accept a normalised flat file path as median_flat_filename.

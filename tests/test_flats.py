@@ -76,9 +76,6 @@ def test_plot_flat(tmp_path: pathlib.Path):
 
     from ccd.flats import plot_flat
 
-    # Create a temporary file for the plot
-    plot_file = tmp_path / "median_flat_profile.png"
-
     # Create a dummy median flat file for testing
     median_flat = numpy.ones((4096, 4109))
 
@@ -86,10 +83,15 @@ def test_plot_flat(tmp_path: pathlib.Path):
     median_flat_hdul.writeto(str(tmp_path / "median_flat.fits"), overwrite=True)
 
     # Call the plot_flat function
+    output_filename = tmp_path / "median_flat.png"
+    profile_output_filename = tmp_path / "median_flat_profile.png"
+
     plot_flat(
         median_flat_filename=str(tmp_path / "median_flat.fits"),
-        ouput_filename=str(plot_file),
+        ouput_filename=str(output_filename),
+        profile_ouput_filename=str(profile_output_filename),
     )
 
     # Check if the plot file was created
-    assert pathlib.Path(plot_file).exists(), "The plot file was not created."
+    assert output_filename.exists(), "The plot file was not created."
+    assert profile_output_filename.exists(), "The profile plot file was not created."
