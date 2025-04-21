@@ -6,6 +6,7 @@
 
 from __future__ import annotations
 
+import os
 import pathlib
 
 import numpy
@@ -85,6 +86,8 @@ def test_plot_flat(tmp_path: pathlib.Path):
     # Call the plot_flat function
     output_filename = tmp_path / "median_flat.png"
     profile_output_filename = tmp_path / "median_flat_profile.png"
+
+    os.chdir(tmp_path)  # Change to the temporary directory
 
     plot_flat(
         median_flat_filename=str(tmp_path / "median_flat.fits"),

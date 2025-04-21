@@ -51,11 +51,11 @@ def plot_flat(
     - Accept a normalised flat file path as median_flat_filename.
     - Read the flat file.
     - Plot the flat frame using matplotlib.imshow with reasonable vmin and vmax
-      limits. Save the plot to a file called median_flat.png
+      limits. Save the plot to the file specified by output_filename.
     - Take the median of the flat frame along the y-axis. You'll end up with a
       1D array.
     - Plot the 1D array using matplotlib.
-    - Save the plot to a file with the name median_flat_profile.png.
+    - Save the plot to the file specified by profile_output_filename.
 
     """
 
