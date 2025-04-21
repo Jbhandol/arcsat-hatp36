@@ -22,10 +22,12 @@ def do_aperture_photometry(
     - For each position and radius, calculate the flux in the aperture, subtracting
       the sky background. You can do this any way that you like but probably you'll
       want to use SkyCircularAnnulus from photutils.
-    - The function should return a table, the result of calling aperture_photometry
-      from photutils. If you prefer to do the calculations yourself or using another
-      package, you can have the function return False, in which case the tests
-      will skip this function.
+    - The function should return the results from the aperture photometry. Usually
+      this will be an astropy table from calling photutils aperture_photometry, but
+      it can be something different if you use a different library.
+
+    Note that the automated tests just check that you are returning from this
+    function, but they do not check the contents of the returned data.
 
     """
 
@@ -34,7 +36,7 @@ def do_aperture_photometry(
     return
 
 
-def plot_radial_profile(aperture_photometry_data):
+def plot_radial_profile(aperture_photometry_data, output_filename="radial_profile.png"):
     """This function must:
 
     - Accept a table of aperture photometry data as aperture_photometry_data. This
@@ -44,7 +46,7 @@ def plot_radial_profile(aperture_photometry_data):
     - Plot the radial profile of a target in the image using matplotlib. If you
       have multiple targets, label them correctly.
     - Plot a vertical line at the radius of the sky aperture used for the photometry.
-    - Save the plot to a file called radial_profile.png.
+    - Save the plot to the file specified in output_filename.
 
     """
 
