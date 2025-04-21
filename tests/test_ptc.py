@@ -31,8 +31,8 @@ def test_calculate_readout_noise(data_dir: pathlib.Path):
     from ccd.ptc import calculate_readout_noise
 
     files = [
-        data_dir / " Bias-S001-R001-C001-NoFilt.fit",
-        data_dir / " Bias-S001-R001-C002-NoFilt.fit",
+        data_dir / "Bias-S001-R001-C001-NoFilt.fit",
+        data_dir / "Bias-S001-R001-C002-NoFilt.fit",
     ]
 
     gain = 1.0  # Assume this is the gain value for the test purpose.
