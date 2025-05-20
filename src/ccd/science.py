@@ -4,6 +4,12 @@
 # @Filename: science.py
 # @License: BSD 3-clause (http://www.opensource.org/licenses/BSD-3-Clause)
 
+from astropy.io import fits
+from astropy.stats import sigma_clip
+import numpy as np
+import matplotlib.pyplot as plt
+from astropy.io import fits
+from astropy.visualization import ImageNormalize, ZScaleInterval
 
 def reduce_science_frame(
     science_filename,
@@ -33,8 +39,26 @@ def reduce_science_frame(
     - Return the reduced science frame as a 2D numpy array.
 
     """
-
-    # This is a placeholder for the actual implementation.
-    reduced_science = None
-
-    return reduced_science
+    # Step: Loading all the relevant calibration files
+    bias = fits.getdata(median_bias_filename).astype('f4')
+    flat = fits.getdata(median_flat_filename).astype('f4')
+    dark = fits.getdata(median_dark_filename).astype('f4')
+    # Step: Getting the science pic
+    sci = fits.open(science_filename)
+    sci_data = sci[0].data.astype('f4')
+    exptime = float(sci[0].header['EXPTIME'])
+    # Step Subtracting the bias
+    reduced = sci_data - bias
+    # Step Subtracting the dark
+    reduced -= dark * exptime
+    # Step Trimming to correct dimensions
+    reduced = reduced
+    #flat = flat[1000:3000, 1000:3000]
+    # Step divide by normalized flat
+    reduced /= flat
+    # Step Save
+    hdu = fits.PrimaryHDU(reduced)
+    hdu.writeto(reduced_science_filename, overwrite=True)
+    # Step remove cosmic rays maybe
+    # Step return
+    return reduced
