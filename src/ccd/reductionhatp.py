@@ -18,11 +18,11 @@ from photometry import do_aperture_photometry, plot_radial_profile
 
 def run_reduction(data_dir = None,
     out_dir = None,
-    positions=[(544, 541), #my star 
-               (510, 661), #comp star 1
-              (414, 255) #comp star 2
+    positions=[(511, 502), #my star 
+               (458, 382), #comp star 1
+              (389, 798) #comp star 2
               ],
-    radii=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+    radii=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
     sky_radius_in=20,
     sky_annulus_width=5):
     """This function must run the entire CCD reduction process. You can implement it
@@ -82,7 +82,7 @@ def run_reduction(data_dir = None,
     print("flats done")
 #=========================================================================================================#
     # 4) Reduce science frames (will change the name of the stars)
-    sci_files = sorted(glob.glob(f"{data_dir}/XO1-b_z_*.fits"))
+    sci_files = sorted(glob.glob(f"{data_dir}/HAT-P-36 b_z_*.fits"))
     all_photometry = [] # save all into a table
     for sci in sci_files:
         base = sci.split("/")[-1].replace(".fit","")
@@ -133,8 +133,8 @@ def run_reduction(data_dir = None,
     if all_photometry:
         master_table = vstack(all_photometry)
         master_table.sort('time_obs')
-        master_table.write(f"{out_dir}/XO1b_photometry_master.ecsv", format="ascii.ecsv", overwrite=True)
-        print(f"Combined photometry saved to {out_dir}/XO1b_photometry_master.ecsv")
+        master_table.write(f"{out_dir}/HAT-P-36 b_photometry_master.ecsv", format="ascii.ecsv", overwrite=True)
+        print(f"Combined photometry saved to {out_dir}/HAT-P-36 b_photometry_master.ecsv")
     else:
         print("No photometry tables created!")
 

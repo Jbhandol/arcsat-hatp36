@@ -1,11 +1,20 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# @Filename: photometry.py
+# @License: BSD 3-clause (http://www.opensource.org/licenses/BSD-3-Clause)
+
 from astropy.io import fits
 from astropy.stats import sigma_clip
 import numpy as np
 import matplotlib.pyplot as plt
+from astropy.io import fits
+from astropy.visualization import ImageNormalize, ZScaleInterval
+from astropy.io import fits
 from astropy.table import QTable, hstack
 from photutils.aperture import CircularAperture, CircularAnnulus, aperture_photometry
 from photutils.aperture import ApertureStats
-from photutils.centroids import centroid_com
+from photutils.profiles import RadialProfile
 
 def do_aperture_photometry(
     image,
@@ -13,66 +22,57 @@ def do_aperture_photometry(
     radii,
     sky_radius_in,
     sky_annulus_width,
-    centroiding=True,           # NEW: Turn on/off centroiding
-    search_radius=10            # NEW: Radius (pixels) for centroid search box
 ):
-    """
-    this function is similar to what i had before. But i relaezide that there is shift in the flat fields. So i used the centroiding we discussed in the class. So this function performs aperture photometry on (optionally centroided) positions.
+    """This function:
 
-    We feed it:
-        image: FITS filename (fully reduced science image).
-        positions: List of (x, y) guess tuples for target and comparison stars.
-        radii: List of aperture radii.
-        sky_radius_in: Inner radius for sky annulus.
-        sky_annulus_width: Width of sky annulus.
-        centroiding: If True, refine positions using centroiding.
-        search_radius: Pixel radius of search box for centroiding.
+    - Accept a fully reduced science image as a file and read it.
+    - Accept a list of positions on the image as a list of tuples (x, y).
+    - Accept a list of aperture radii as a list of floats.
+    - Accept a the radius at which to measure the sky background as sky_radius_in.
+    - Accept a the width of the annulus as sky_annulus_width.
+    - For each position and radius, calculate the flux in the aperture, subtracting
+      the sky background. You can do this any way that you like but probably you'll
+      want to use SkyCircularAnnulus from photutils.
+    - The function should return the results from the aperture photometry. Usually
+      this will be an astropy table from calling photutils aperture_photometry, but
+      it can be something different if you use a different library.
 
-    Returns:
-        Astropy table with background-subtracted flux for all stars, all apertures.
+    Note that the automated tests just check that you are returning from this
+    function, but they do not check the contents of the returned data.
+
     """
-    # Step 1: Load science image
+    #Step Loading science image (reduced)
     data = fits.getdata(image)
-    refined_positions = []
-
-    # Step 2: Centroid on each guess position (if enabled)
-    for (x0, y0) in positions:
-        if centroiding:
-            # Extract small box
-            cutout = data[
-                int(y0)-search_radius:int(y0)+search_radius+1,
-                int(x0)-search_radius:int(x0)+search_radius+1
-            ]
-            # Compute centroid
-            cy, cx = centroid_com(cutout)
-            x_star = x0 - search_radius + cx
-            y_star = y0 - search_radius + cy
-            refined_positions.append((x_star, y_star))
-        else:
-            refined_positions.append((x0, y0))
-
-    # Step 3: Photometry (same as your original code)
+    #Step Initializing list of 
     results = []
-    for radius in radii:
-        aperture = CircularAperture(refined_positions, r=radius)
-        annulus = CircularAnnulus(refined_positions, r_in=sky_radius_in, r_out=sky_radius_in + sky_annulus_width)
 
+    for radius in radii:
+    #Step Aperture and annulus
+        aperture = CircularAperture(positions, r=radius)
+        annulus = CircularAnnulus(positions, r_in=sky_radius_in, r_out=sky_radius_in + sky_annulus_width)
+
+    #Step Doing photometry
         phot_ap = aperture_photometry(data, aperture)
         phot_an = aperture_photometry(data, annulus)
 
+    #Step estimating background
         annulus_stats = ApertureStats(data, annulus)
         bkg_median = annulus_stats.median
         bkg_total = bkg_median * aperture.area
 
+    #Step minus background
         phot_ap[f'flux_r{radius}'] = phot_ap['aperture_sum'] - bkg_total
 
+    #Step into the results
         results.append(phot_ap[[f'flux_r{radius}']])
-
-    xs = [p[0] for p in refined_positions]
-    ys = [p[1] for p in refined_positions]
+        
+    #Step Merging
+    xs = [p[0] for p in positions] #lots of warnings about failure to merge
+    ys = [p[1] for p in positions]
     base_table = QTable([xs, ys], names=('xcenter', 'ycenter'))
     result = hstack([base_table] + results)
-    result.meta['sky_radius_in'] = sky_radius_in
+    result.meta['sky_radius_in'] = sky_radius_in   # storing the sky_raaidus in to later be read by radial plot function
+    #Step result
     return result
 
 def plot_radial_profile(aperture_photometry_data, output_filename="radial_profile.png"):
